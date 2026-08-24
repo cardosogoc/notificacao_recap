@@ -1,5 +1,6 @@
 package com.javanauta.notificacao.business;
 
+import com.javanauta.notificacao.business.dto.ComunicacaoOutDTO;
 import com.javanauta.notificacao.business.dto.TarefasDTO;
 import com.javanauta.notificacao.infraestructure.exceptions.EmailException;
 import jakarta.mail.MessagingException;
@@ -43,6 +44,30 @@ public class EmailService {
             context.setVariable("nomeTarefa", dto.getNomeTarefa());
             context.setVariable("dataEvento", dto.getDataEvento());
             context.setVariable("descricao", dto.getDescricao());
+
+            String template = templateEngine.process("notificacao", context);
+            mimeMessageHelper.setText(template, true);
+            javaMailSender.send(mensagem);
+
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new EmailException("Erro ao Enviar o Email", e.getCause());
+        }
+    }
+
+    public void enviaEmailComunica(ComunicacaoOutDTO dto) {
+
+        try {
+            MimeMessage mensagem = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mensagem, true, StandardCharsets.UTF_8.name());
+
+            mimeMessageHelper.setFrom(new InternetAddress(remetente, nomeRemetente));
+            mimeMessageHelper.setTo(InternetAddress.parse(dto.getEmailDestinatario()));
+            mimeMessageHelper.setSubject("Notificação de Tarefa");
+
+            Context context = new Context();
+            context.setVariable("nomeTarefa", dto.getNomeDestinatario());
+            context.setVariable("dataEvento", dto.getDataHoraEnvio());
+            context.setVariable("descricao", dto.getMensagem());
 
             String template = templateEngine.process("notificacao", context);
             mimeMessageHelper.setText(template, true);

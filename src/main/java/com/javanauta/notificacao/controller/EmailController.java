@@ -1,6 +1,7 @@
 package com.javanauta.notificacao.controller;
 
 import com.javanauta.notificacao.business.EmailService;
+import com.javanauta.notificacao.business.dto.ComunicacaoOutDTO;
 import com.javanauta.notificacao.business.dto.TarefasDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,12 @@ public class EmailController {
     @PostMapping
     public ResponseEntity<Void> enviarEmail(@RequestBody TarefasDTO dto){
         emailService.enviaEmail(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/agendado")
+    public ResponseEntity<Void> enviarEmailComunica(@RequestBody ComunicacaoOutDTO dto){
+        emailService.enviaEmailComunica(dto);
         return ResponseEntity.ok().build();
     }
 }
